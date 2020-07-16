@@ -15,16 +15,18 @@ class TxByTxIdApiUser(HttpUser):
     # user fetches a random block by height, uses the block hash to fetch all txns from that block
     def on_start(self):
         response = self.client.get(
-            url="/v1/block/height/" + str(random.randint(1, blocksUpperLimit)),
-            headers={"authorization": "Bearer " + sessionKey},
-            verify=False
+            url = "/v1/block/height/" + str(random.randint(1, blocksUpperLimit)),
+            name = "/v1/block/height/...",
+            headers = {"authorization": "Bearer " + sessionKey},
+            verify = False
         )
         responseObject = json.loads(response.text)
         self.blockHash = responseObject["block"]["hash"]
         response = self.client.get(
-            url="/v1/block/txids/" + responseObject["block"]["hash"],
-            headers={"authorization": "Bearer " + sessionKey},
-            verify=False
+            url = "/v1/block/txids/" + responseObject["block"]["hash"],
+            name = "/v1/block/txids/...",
+            headers = {"authorization": "Bearer " + sessionKey},
+            verify = False
         )
         responseObject = json.loads(response.text)
         self.txids = responseObject["txids"]
@@ -34,7 +36,7 @@ class TxByTxIdApiUser(HttpUser):
     def getTxsByTxIds(self):
         while(len(self.txids) != 0):
             self.client.get(
-                url="/v1/transaction/" + self.txids.pop(),
-                headers={"authorization": "Bearer " + sessionKey},
-                verify=False
+                url = "/v1/transaction/" + self.txids.pop(),
+                headers = {"authorization": "Bearer " + sessionKey},
+                verify = False
             )
