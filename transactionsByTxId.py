@@ -26,7 +26,6 @@ class TxByTxIdApiUser(HttpUser):
             headers={"authorization": "Bearer " + sessionKey},
             verify=False
         )
-        print(response.text)
         responseObject = json.loads(response.text)
         self.txids = responseObject["txids"]
 
