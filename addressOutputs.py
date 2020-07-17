@@ -48,12 +48,20 @@ class TxByTxIdApiUser(HttpUser):
         self.txids = responseObject["txids"]
 
     # user queries all transactions from the block by txid
+    # then, queries all outputs by outputAddress parsed from the transactions
     @task
     def getTxsByTxIds(self):
         while(len(self.txids) != 0):
-            self.client.get(
+            response = self.client.get(
                 url = "/v1/transaction/" + self.txids.pop(),
                 name = "/v1/transaction/...",
                 headers = {"authorization": "Bearer " + sessionKey},
                 verify = False
             )
+            for output in (json.loads(response.text)["tx"]["tx"]["txOuts"]):
+                self.client.get(
+                    url = "/v1/address/" + output["address"] + "/outputs",
+                    name = "/v1/address...",
+                    headers = {"authorization": "Bearer " + sessionKey},
+                    verify = False
+                )
