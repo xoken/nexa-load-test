@@ -58,7 +58,7 @@ class TxByTxIdApiUser(HttpUser):
                 headers = {"authorization": "Bearer " + sessionKey},
                 verify = False
             )
-            for output in (json.loads(response.text)["tx"]["tx"]["txOuts"]):
+            for output in json.loads(response.text)["tx"]["tx"]["txOuts"]:
                 self.client.get(
                     url = "/v1/address/" + output["address"] + "/outputs",
                     name = "/v1/address...",
