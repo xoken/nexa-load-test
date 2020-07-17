@@ -6,7 +6,8 @@ from locust import HttpUser, TaskSet, between, task
 cfgParser = configparser.ConfigParser()
 cfgParser.read("testConfig.ini")
 
-blocksUpperLimit = int(cfgParser["testConfig"]["blocksSynced"])
+blocksLowerLimit = int(cfgParser["testConfig"]["blocksLowerLimit"])
+blocksUpperLimit = int(cfgParser["testConfig"]["blocksUpperLimit"])
 sessionKey = str(cfgParser["testConfig"]["sessionKey"])
 
 class TxByTxIdApiUser(HttpUser):
@@ -15,7 +16,7 @@ class TxByTxIdApiUser(HttpUser):
     # user fetches a random block by height, uses the block hash to fetch all txns from that block
     def on_start(self):
         response = self.client.get(
-            url = "/v1/block/height/" + str(random.randint(1, blocksUpperLimit)),
+            url = "/v1/block/height/" + str(random.randint(blocksLowerLimit, blocksUpperLimit)),
             name = "/v1/block/height/...",
             headers = {"authorization": "Bearer " + sessionKey},
             verify = False
@@ -37,6 +38,7 @@ class TxByTxIdApiUser(HttpUser):
         while(len(self.txids) != 0):
             self.client.get(
                 url = "/v1/transaction/" + self.txids.pop(),
+                name = "/v1/transaction/...",
                 headers = {"authorization": "Bearer " + sessionKey},
                 verify = False
             )
